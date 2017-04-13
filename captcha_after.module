@@ -80,11 +80,11 @@ function captcha_after_form_captcha_point_entity_builder($entity_type, CaptchaPo
   }
 
   if ($form_state->getValue('captcha_after_global_flooding_threshold')) {
-    return $captcha_point->setThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold', $form_state->getValue('captcha_after_global_flooding_threshold'));
+    $captcha_point->setThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold', $form_state->getValue('captcha_after_global_flooding_threshold'));
   }
 
-  $captcha_point->unsetThirdPartySetting('captcha_after', 'captcha_after_flooding_threshold');
-  $captcha_point->unsetThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold');
+  //$captcha_point->unsetThirdPartySetting('captcha_after', 'captcha_after_flooding_threshold');
+  //$captcha_point->unsetThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold');
 }
 
 /**
@@ -124,54 +124,36 @@ function captcha_after_form_alter(array &$form, FormStateInterface $form_state, 
 
     // If global settings is set on the form.
     if (!empty($global_flooding_threshold)) {
-
       // Flood event name.
       $flood_event = 'captcha_after_global_flooding_threshold_' . $form['#id'];
-
       // If flood not exceeds threshold.
       if ($flood->isAllowed($flood_event, $global_flooding_threshold)) {
-
         // Add to flood event.
         $flood_events[] = $flood_event;
-
         // Hide the captcha.
         $hide_captcha = TRUE;
-
-        // If Host/IP level threshold is enabled.
-        if (!empty($flooding_threshold)) {
-          // Flood event name.
-          $flood_event = 'captcha_after_flooding_threshold_' . $form['#id'];
-          // If flood not exceeds threshold.
-          if ($flood->isAllowed($flood_event, $flooding_threshold)) {
-            $flood_events[] = $flood_event;
-            // Hide the captcha.
-            $hide_captcha = TRUE;
-          }
-          else {
-            $hide_captcha = FALSE;
-          }
-        }
       }
     }
-//    else {
-//      // If Host/IP level threshold is enabled.
-//      if (!empty($flooding_threshold)) {
-//        // Flood event name.
-//        $flood_event = 'captcha_after_flooding_threshold_' . $form['#id'];
-//        // If flood not exceeds threshold.
-//        if ($flood->isAllowed($flood_event, $flooding_threshold)) {
-//          $flood_events[] = $flood_event;
-//          // Hide the captcha.
-//          $hide_captcha = TRUE;
-//        }
-//        else {
-//          $hide_captcha = FALSE;
-//        }
-//      }
-//    }
 
+    // If Host/IP level threshold is enabled.
+    if (!empty($flooding_threshold)) {
+      // Flood event name.
+      $flood_event = 'captcha_after_flooding_threshold_' . $form['#id'];
+      // If flood not exceeds threshold.
+      if ($flood->isAllowed($flood_event, $flooding_threshold)) {
+        $flood_events[] = $flood_event;
+        // Hide the captcha.
+        $hide_captcha = TRUE;
+      }
+      else {
+        $hide_captcha = FALSE;
+        // If user level flood exceed, no need to then increase global flood.
+        $flood_events = [];
+      }
+    }
+
+    // Hide the captcha.
     if ($hide_captcha) {
-      // Hide the captcha.
       unset($form['captcha']);
     }
 
@@ -188,13 +170,13 @@ function captcha_after_form_alter(array &$form, FormStateInterface $form_state, 
 function _captcha_after_form_validate(&$form, FormStateInterface $form_state) {
   // If there is any error, then register flood.
   if ($form_state->getErrors()) {
-    // The flood object.
-    $flood = $form_state->get('flood');
     // Available flood events.
     $flood_events = $form_state->get('flood_events');
 
     // If there is any flood event, register it.
     if (!empty($flood_events)) {
+      // The flood object.
+      $flood = $form_state->get('flood');
       foreach ($flood_events as $flood_event) {
         $flood->register($flood_event);
       }
@@ -206,14 +188,13 @@ function _captcha_after_form_validate(&$form, FormStateInterface $form_state) {
  * Form submit handler to clear the flood.
  */
 function _captcha_after_form_submit(&$form, FormStateInterface $form_state) {
-  // The flood object.
-  $flood = $form_state->get('flood');
-
   // Available flood events.
   $flood_events = $form_state->get('flood_events');
 
   // Clear the flood system.
   if (!empty($flood_events)) {
+    // The flood object.
+    $flood = $form_state->get('flood');
     foreach ($flood_events as $flood_event) {
       // Do not clear the global threshold flood.
       if (strpos($flood_event, 'captcha_after_global_flooding_threshold_') !== FALSE) {
