@@ -1,7 +1,7 @@
 name: 'CAPTCHA After'
-description: 'Shows CAPTCHA After X Unsuccessful Submit Attempts.'
+description: 'Shows CAPTCHA after X unsuccessful submit attempts.'
 type: module
 package: Spam control
 core: 8.x
 dependencies:
-  - captcha
+  - captcha:captcha

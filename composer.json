@@ -1,0 +1,21 @@
+{
+    "name": "Tawreh/captcha_after",
+    "type": "drupal-module",
+    "description": "Show CAPTCHA after X unsuccsseful submit attempts.",
+    "keywords": ["captcha"],
+    "homepage": "https://github.com/Tawreh/captcha_after",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sophie Shanahan-Kluth",
+            "email": "sophie.sk@focusrite.com"
+        },
+        {
+            "name": "Rohit Joshi",
+            "homepage": "medium.com/@joshirohit100"
+        }
+    ],
+    "require": {
+        "drupal/captcha": "^1.0",
+    }
+}
