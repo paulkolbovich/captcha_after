@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Module file.
+ * Main module file for the captcha_after module.
  */
 
 use Drupal\captcha\Entity\CaptchaPoint;
@@ -47,24 +47,32 @@ function _captcha_after_delay_attempt_element(array &$form, FormStateInterface $
   /* @var \Drupal\captcha\Entity\CaptchaPoint $captcha_point */
   $captcha_point = $form_state->getFormObject()->getEntity();
 
-  $form['captcha_after'] = array(
+  $form['captcha_after'] = [
     '#type' => 'details',
     '#title' => t('Captcha After Settings'),
-    '#description' => t('Captcha after related settings for this captcha point entity. Global flooding threshold is evaluated first then Host/IP based flooding.'),
+    '#description' => t('Captcha after related settings for this captcha point
+      entity. Global flooding threshold is evaluated first then Host/IP based
+      flooding.'),
     '#open' => FALSE,
-  );
+  ];
 
   $form['captcha_after']['captcha_after_global_flooding_threshold'] = [
     '#type' => 'number',
     '#title' => t('CAPTCHA global flooding threshold'),
-    '#description' => t('Number of times <strong>ALL</strong> visitors are allowed to submit a protected form within an hour before starting to protect form with CAPTCHA. This is useful for protecting against flooding from multiple IPs. Enter 0 to disable this behaviour.'),
+    '#description' => t('Number of times <strong>ALL</strong> visitors are
+      allowed to submit a protected form within an hour before starting to
+      protect form with CAPTCHA. This is useful for protecting against flooding
+      from multiple IPs. Enter 0 to disable this behaviour.'),
     '#default_value' => $captcha_point->getThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold') ?: 0,
   ];
 
   $form['captcha_after']['captcha_after_flooding_threshold'] = [
     '#type' => 'number',
     '#title' => t('CAPTCHA flooding threshold'),
-    '#description' => t('Number of times a visitor (based on hostname/IP) is allowed to submit a protected form in an hour before starting to protect form with CAPTCHA. This is useful for protecting against repeated (but valid) submissions. Enter 0 to disable this behaviour.'),
+    '#description' => t('Number of times a visitor (based on hostname/IP) is
+      allowed to submit a protected form in an hour before starting to protect
+      form with CAPTCHA. This is useful for protecting against repeated (but
+      valid) submissions. Enter 0 to disable this behaviour.'),
     '#default_value' => $captcha_point->getThirdPartySetting('captcha_after', 'captcha_after_flooding_threshold') ?: 0,
   ];
 
@@ -82,9 +90,6 @@ function captcha_after_form_captcha_point_entity_builder($entity_type, CaptchaPo
   if ($form_state->getValue('captcha_after_global_flooding_threshold')) {
     $captcha_point->setThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold', $form_state->getValue('captcha_after_global_flooding_threshold'));
   }
-
-  //$captcha_point->unsetThirdPartySetting('captcha_after', 'captcha_after_flooding_threshold');
-  //$captcha_point->unsetThirdPartySetting('captcha_after', 'captcha_after_global_flooding_threshold');
 }
 
 /**
@@ -95,7 +100,6 @@ function captcha_after_form_alter(array &$form, FormStateInterface $form_state, 
 
   // If captcha is enabled on the form.
   if ($captcha) {
-
     /* @var \Drupal\captcha\Entity\CaptchaPoint $captcha_point */
     $captcha_point = \Drupal::entityTypeManager()
       ->getStorage('captcha_point')
