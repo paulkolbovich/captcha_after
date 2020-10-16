@@ -1,9 +1,9 @@
 {
-    "name": "focusrite-novation/captcha_after",
+    "name": "paulkolbovich/captcha_after",
     "type": "drupal-module",
     "description": "Show CAPTCHA after X unsuccsseful submit attempts.",
     "keywords": ["captcha"],
-    "homepage": "https://github.com/focusrite-novation/captcha_after",
+    "homepage": "https://github.com/paulkolbovich/captcha_after",
     "license": "MIT",
     "authors": [
         {
